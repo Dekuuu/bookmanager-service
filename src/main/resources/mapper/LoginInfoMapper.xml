@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.LoginInfoMapper">
+    <select id="queryLoginInfo" parameterType="com.biyesheji.bookmanagerservice.dto.LoginInfoDto"
+    resultType="com.biyesheji.bookmanagerservice.entity.LoginInfo">
+        select <include refid="loginInfoContent" /> from logininfo
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+
+            <if test="userName != null and userName !=''">
+                and userName = #{userName}
+            </if>
+
+            <if test="password != null and password !=''">
+                and password = #{password}
+            </if>
+
+            <if test="loginState != null">
+                and loginState = #{loginState}
+            </if>
+
+            <if test="userType != null and userType !=''">
+                and userType = #{userType}
+            </if>
+
+            <if test="version != null">
+                and version = #{version}
+            </if>
+
+            <if test="email != null and email !=''">
+                and email = #{email}
+            </if>
+        </where>
+    </select>
+
+    <sql id="loginInfoContent">
+        id,
+        userName,
+        password,
+        loginState,
+        userType,
+        createTime,
+        updateTime,
+        version,
+        email
+    </sql>
+
+    <insert id="insertLoginInfo" parameterType="com.biyesheji.bookmanagerservice.dto.LoginInfoDto">
+        insert into logininfo values(
+        logininfo_sequence.nextval,
+        #{userName,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR},
+        #{loginState,jdbcType=VARCHAR},
+        #{userType,jdbcType=NUMERIC},
+        sysdate,
+        sysdate,
+        #{version,jdbcType=NUMERIC},
+        #{email,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateLoginInfo" parameterType="com.biyesheji.bookmanagerservice.entity.LoginInfo">
+      update logininfo
+      <trim prefix="set" suffixOverrides=",">
+          <if test="newPsw !=null and newPsw!=''">
+              password=#{newPsw},
+          </if>
+
+          <if test="loginState !=null">
+              loginState=#{loginState},
+          </if>
+
+          <if test="userType !=null">
+              userType=#{userType},
+          </if>
+
+          <if test="version !=null">
+              version=#{version},
+          </if>
+
+          <if test="updateTime !=null">
+              updateTime=sysdate,
+          </if>
+
+          <if test="email !=null">
+              email=#{email},
+          </if>
+      </trim>
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+
+            <if test="userName != null and userName != ''">
+                and userName = #{userName}
+            </if>
+
+            <if test="originPsw != null and originPsw != ''">
+                and password = #{originPsw}
+            </if>
+        </where>
+    </update>
+
+    <select id="queryAllUsers" resultType="com.biyesheji.bookmanagerservice.entity.LoginInfo">
+        select userName,email from logininfo where email is not null
+    </select>
+
+    <select id="queryByPage" parameterType="com.biyesheji.bookmanagerservice.dto.LoginInfoDto"
+    resultType="com.biyesheji.bookmanagerservice.entity.LoginInfo">
+        select t2.* from
+        (select t1.*,rownum rn from
+        (select <include refid="loginInfoContent" /> from logininfo
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+
+            <if test="userName != null and userName !=''">
+                and userName = #{userName}
+            </if>
+
+            <if test="password != null and password !=''">
+                and password = #{password}
+            </if>
+
+            <if test="loginState != null">
+                and loginState = #{loginState}
+            </if>
+
+            <if test="userType != null and userType !=''">
+                and userType = #{userType}
+            </if>
+
+            <if test="version != null">
+                and version = #{version}
+            </if>
+
+            <if test="email != null and email !=''">
+                and email = #{email}
+            </if>
+        </where>) t1 where rownum &lt;= #{endIndex} )
+        t2 where t2.rn &gt; #{startIndex}
+    </select>
+
+    <select id="queryCountsByPage" parameterType="com.biyesheji.bookmanagerservice.dto.LoginInfoDto"
+    resultType="Integer">
+        select count(id) from logininfo
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+
+            <if test="userName != null and userName !=''">
+                and userName = #{userName}
+            </if>
+
+            <if test="password != null and password !=''">
+                and password = #{password}
+            </if>
+
+            <if test="loginState != null">
+                and loginState = #{loginState}
+            </if>
+
+            <if test="userType != null and userType !=''">
+                and userType = #{userType}
+            </if>
+
+            <if test="version != null">
+                and version = #{version}
+            </if>
+
+            <if test="email != null and email !=''">
+                and email = #{email}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryByName" resultType="com.biyesheji.bookmanagerservice.entity.LoginInfo">
+        select <include refid="loginInfoContent"/>
+        from logininfo where userName = #{userName}
+    </select>
+</mapper>

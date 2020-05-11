@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.BookDictMapper">
+    <select id="queryBookDict" resultType="java.util.Map">
+        select categoryno,categoryName from book_dict
+    </select>
+
+    <select id="queryBookDictEntity" resultType="com.biyesheji.bookmanagerservice.entity.BookDict">
+        select categoryno,categoryName as categoryNoName from book_dict
+    </select>
+    
+    <!--<resultMap id="bookDictMap" type="java.util.HashMap">
+        <result property="categoryno" column="categoryName" jdbcType="VARCHAR"/>
+    </resultMap>-->
+</mapper>

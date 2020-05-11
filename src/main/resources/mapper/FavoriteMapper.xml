@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.FavoriteMapper">
+    <select id="queryByUserName" parameterType="com.biyesheji.bookmanagerservice.dto.FavoriteDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.Book">
+        select t3.*,di.categoryName as categoryNoName from book_dict di,
+        (select t2.* from
+        (select t1.*,rownum rn from
+        (select distinct bi.bookName,
+         bi.imgUrl as imageUrl,
+         bi.categoryNo,
+         bi.description,
+         bi.author
+         from favorite f
+        left join book_info bi on f.bookName = bi.bookName
+         where f.userName = #{userName} and f.state = 1
+        <if test="bookName!=null and bookName != ''">
+            and bi.bookName =#{bookName}
+        </if>
+
+        <if test="categoryNo!=null and categoryNo != ''">
+            and bi.categoryNo =#{categoryNo}
+        </if>
+
+        <if test="author!=null and author != ''">
+            and bi.author =#{author}
+        </if>
+        ) t1
+         where rownum &lt; #{endIndex}) t2
+          where t2.rn &gt;= #{startIndex}) t3
+        where t3.categoryNo = di.categoryNo
+    </select>
+
+    <select id="queryCountsByUserName" parameterType="com.biyesheji.bookmanagerservice.dto.FavoriteDto" resultType="Integer">
+        select count(t.bN) from
+        (select distinct bi.bookName as bN,
+        bi.imgUrl as imageUrl,
+        bi.categoryNo,
+        bi.description,
+        bi.author
+        from favorite f
+        left join book_info bi on f.bookName = bi.bookName
+        where f.userName = #{userName} and f.state = 1
+        <if test="bookName!=null and bookName != ''">
+            and bi.bookName =#{bookName}
+        </if>
+
+        <if test="categoryNo!=null and categoryNo != ''">
+            and bi.categoryNo =#{categoryNo}
+        </if>
+
+        <if test="author!=null and author != ''">
+            and bi.author =#{author}
+        </if>) t
+    </select>
+
+    <insert id="insertFavorite" parameterType="com.biyesheji.bookmanagerservice.dto.FavoriteDto">
+        insert into favorite
+         values(
+         favorite_sequence.nextval,
+         #{userName},
+         #{bookName},
+         #{state},
+         #{version},
+         sysdate,
+         sysdate
+         )
+    </insert>
+
+    <update id="updateFavorite" parameterType="com.biyesheji.bookmanagerservice.dto.FavoriteDto">
+        update favorite set state = #{state},
+        version = version+1,
+        updateTime =sysdate
+        where userName = #{userName} and bookName = #{bookName} and state = 1
+    </update>
+</mapper>

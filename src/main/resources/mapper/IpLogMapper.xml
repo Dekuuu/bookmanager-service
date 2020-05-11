@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.IpLogMapper">
+    <insert id="insertIpLog" parameterType="com.biyesheji.bookmanagerservice.entity.IpLog">
+        insert into ipLog values
+        (
+        ipLog_sequence.nextval,
+        #{ip},
+        #{loginSuccess},
+        #{userName},
+        sysdate,
+        #{version},
+        sysdate,
+        sysdate
+        )
+    </insert>
+
+    <select id="queryIpLog" parameterType="com.biyesheji.bookmanagerservice.dto.IpLogDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.IpLog">
+        select t2.* from
+        (select t1.* ,rownum rn from
+        (select
+        id,
+        ip,
+        loginSuccess,
+        userName,
+        loginTime from iplog
+        <where>
+            <if test="loginSuccess != null">
+                and loginSuccess = #{loginSuccess}
+            </if>
+
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+
+            <if test="userName != null and userName != ''">
+                and userName = #{userName}
+            </if>
+
+            <if test="loginTimeSearch != null">
+                and loginTime like to_date(#{loginTimeSearch},'YYYY-MM-DD')
+            </if>
+        </where>) t1
+        where rownum &lt; #{endIndex}) t2
+        where t2.rn &gt;= #{startIndex}
+    </select>
+
+    <select id="queryIpLogCounts" parameterType="com.biyesheji.bookmanagerservice.dto.IpLogDto"
+            resultType="Integer">
+        select
+        count(id) from iplog
+        <where>
+            <if test="loginSuccess != null">
+                and loginSuccess = #{loginSuccess}
+            </if>
+
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+
+            <if test="userName != null and userName != ''">
+                and userName = #{userName}
+            </if>
+
+            <if test="loginTimeSearch != null">
+                and loginTime like to_date(#{loginTimeSearch},'YYYY-MM-DD')
+            </if>
+        </where>
+    </select>
+</mapper>

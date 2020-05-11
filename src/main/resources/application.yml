@@ -1,0 +1,100 @@
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+server:
+  port: 8081
+
+#   mybatis_config
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+#  配置sql语句打印日志
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+  #datasource
+spring:
+  application:
+    name: bookmanager-service
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  datasource:
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:ORCL
+    username: book
+    password: 123
+    initSize: 5
+    maxActive: 20
+    minIdle:  5
+    maxWait: 5000
+    testOnReturn: true
+    #============== kafka ===================
+    # 指定kafka 代理地址，可以多个
+  redis:
+    database: 0
+    host: 192.168.229.130
+    #redis默认端口
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 1000
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 5
+    # 连接超时时间（毫秒）
+    timeout: 5000
+    session:
+      store-type: redis
+  kafka:
+    bootstrap-servers: 192.168.229.130:9092
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: test1-group
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      missing-topics-fatal: false
+  mail:
+    host: smtp.163.com
+  #你的QQ邮箱账户
+    username: wwg1asndkan@163.com
+  #你的QQ邮箱第三方授权码
+    password: 123qwe
+    #编码类型
+    default-encoding: UTF-8
+    #=============== provider  =======================
+
+#    spring.kafka.producer.retries=0
+#    # 每次批量发送消息的数量
+#    spring.kafka.producer.batch-size=16384
+#    spring.kafka.producer.buffer-memory=33554432
+#
+#    # 指定消息key和消息体的编解码方式
+#    spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+#    spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer
+#
+#    #=============== consumer  =======================
+#    # 指定默认消费者group id
+#    spring.kafka.consumer.group-id=test-hello-group
+#
+#    spring.kafka.consumer.auto-offset-reset=earliest
+#    spring.kafka.consumer.enable-auto-commit=true
+#    spring.kafka.consumer.auto-commit-interval=100
+#
+#    # 指定消息key和消息体的编解码方式
+#    spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+#    spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer

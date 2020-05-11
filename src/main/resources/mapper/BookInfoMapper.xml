@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.BookInfoMapper">
+    <select id="queryBooksByPage" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto"
+    resultType="com.biyesheji.bookmanagerservice.entity.Book">
+        select t.* from
+        (select rownum rn,book.* from
+        (select
+        <include refid="bookInfoContent"/> from book_info
+        <where>
+            <if test="donaterName != null and donaterName !=''">
+                and donater = #{donaterName}
+            </if>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="bookNo!=null and bookNo!= ''">
+                and bookNo = #{bookNo}
+            </if>
+
+            <if test="bookName!=null and bookName!= ''">
+                and bookName = #{bookName}
+            </if>
+
+            <if test="categoryNo!=null and categoryNo!= ''">
+                and categoryNo = #{categoryNo}
+            </if>
+
+            <if test="imageUrl!=null and imageUrl!= ''">
+                and imgUrl = #{imageUrl}
+            </if>
+
+            <if test="description!=null and description!= ''">
+                and description = #{description}
+            </if>
+
+            <if test="author!=null and author!= ''">
+                and author = #{author}
+            </if>
+
+            <if test="version!=null">
+                and version = #{version}
+            </if>
+
+            <if test="state!=null">
+                and state = #{state}
+            </if>
+        </where> order by id) book
+        where rownum &lt;= #{endIndex}) t
+        where t.rn &gt; #{startIndex}
+    </select>
+
+    <select id="queryBooksByPageCount" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto" resultType="Integer">
+        select count(id) from book_info
+        <where>
+            <if test="donaterName != null and donaterName !=''">
+                and donater = #{donaterName}
+            </if>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="bookNo!=null and bookNo!= ''">
+                and bookNo = #{bookNo}
+            </if>
+
+            <if test="bookName!=null and bookName!= ''">
+                and bookName = #{bookName}
+            </if>
+
+            <if test="categoryNo!=null and categoryNo!= ''">
+                and categoryNo = #{categoryNo}
+            </if>
+
+            <if test="imageUrl!=null and imageUrl!= ''">
+                and imgUrl = #{imageUrl}
+            </if>
+
+            <if test="description!=null and description!= ''">
+                and description = #{description}
+            </if>
+
+            <if test="author!=null and author!= ''">
+                and author = #{author}
+            </if>
+
+            <if test="version!=null">
+                and version = #{version}
+            </if>
+
+            <if test="state!=null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <sql id="bookInfoContent">
+        id,
+        bookNo,
+        bookName,
+        categoryNo,
+        imgUrl as imageUrl,
+        description,
+        author,
+        createTime,
+        updateTime,
+        version,
+        state,
+        donater,
+        donateTime
+    </sql>
+
+    <insert id="insertBook" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto">
+        insert into book_info values(
+        book_info_sequence.nextval,
+        book_info_sequence.currval,
+        #{bookName},
+        #{categoryNo},
+        #{imageUrl},
+        #{description},
+        #{author},
+        sysdate,
+        sysdate,
+        #{version},
+        #{state},
+        #{donaterName},
+        sysdate
+        )
+    </insert>
+
+    <update id="updateBook" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto">
+      update book_info
+      <trim prefix="set" suffixOverrides=",">
+          <if test="categoryNo !=null and categoryNo!=''">
+              categoryNo=#{categoryNo},
+          </if>
+
+          <if test="imageUrl !=null and imageUrl!=''">
+              imgUrl=#{imageUrl},
+          </if>
+
+          <if test="description !=null and description!=''">
+              description=#{description},
+          </if>
+
+          <if test="author !=null and author!=''">
+              author=#{author},
+          </if>
+              version=version+1,
+              updateTime=sysdate,
+          <if test="state !=null">
+              state=#{state},
+          </if>
+      </trim>
+        <where>
+            <if test="id !=null">
+                and id =#{id}
+            </if>
+
+            <if test="bookNo !=null">
+                and bookNo =#{bookNo}
+            </if>
+        </where>
+    </update>
+
+    <select id="queryBookSingleByCondition" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.Book">
+        select <include refid="bookInfoContent"/> from book_info
+        <where>
+            <if test="id != null">
+                and id =#{id}
+            </if>
+
+            <if test="bookName != null and bookName != ''">
+                and bookName = #{bookName}
+            </if>
+
+            <if test="bookNo !=null and bookNo != ''">
+                and bookNo = #{bookNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBooksGroup" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.Book">
+        select t.* from
+        (select rownum rn,book.* from
+        (select
+        distinct
+        bookName,
+        categoryNo,
+        imgUrl as imageUrl,
+        description,
+        author
+        from book_info
+        <where>
+            state not in (2,3)
+            <if test="bookNo!=null and bookNo!= ''">
+                and bookNo = #{bookNo}
+            </if>
+
+            <if test="bookName!=null and bookName!= ''">
+                and bookName = #{bookName}
+            </if>
+
+            <if test="categoryNo!=null and categoryNo!= ''">
+                and categoryNo = #{categoryNo}
+            </if>
+
+            <if test="description!=null and description!= ''">
+                and description = #{description}
+            </if>
+
+            <if test="author!=null and author!= ''">
+                and author = #{author}
+            </if>
+        </where> ) book
+        where rownum &lt;= #{endIndex}) t
+        where t.rn &gt; #{startIndex}
+    </select>
+
+    <select id="queryBooksGroupCounts" parameterType="com.biyesheji.bookmanagerservice.dto.BookDto" resultType="Integer">
+        select count(book.bookName) from
+        (select
+        distinct
+        bookName,
+        categoryNo,
+        imgUrl as imageUrl,
+        description,
+        author
+        from book_info
+        <where>
+            state not in (2,3)
+            <if test="bookNo!=null and bookNo!= ''">
+                and bookNo = #{bookNo}
+            </if>
+
+            <if test="bookName!=null and bookName!= ''">
+                and bookName = #{bookName}
+            </if>
+
+            <if test="categoryNo!=null and categoryNo!= ''">
+                and categoryNo = #{categoryNo}
+            </if>
+
+            <if test="description!=null and description!= ''">
+                and description = #{description}
+            </if>
+
+            <if test="author!=null and author!= ''">
+                and author = #{author}
+            </if>
+        </where> ) book
+    </select>
+
+    <select id="queryBooksGroupCount" resultType="java.util.Map">
+        select bookName as key,count(id) as value from book_info where state = 0 group by bookName
+    </select>
+
+    <select id="queryNotCheckCount" resultType="Integer">
+        select count(id) from book_info
+        where state = 2
+    </select>
+</mapper>

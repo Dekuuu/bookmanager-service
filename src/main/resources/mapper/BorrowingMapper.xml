@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.biyesheji.bookmanagerservice.mapper.BorrowingMapper">
+    <select id="queryBorrowingInfoByUserName" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
+        select distinct t3.*,book_info.imgurl as imageUrl from
+        (select t2.* from
+        (select t1.*,rownum rn from
+        (select
+        b.id,
+        b.borrowingName,
+        b.borrowingBookNo,
+        b.returnState,
+        bi.bookName as borrowingBookNoName,
+        b.renewAble,
+        b.BORROWIINGTIME as borrowingTime,
+        b.shouldReturnTime,
+        b.returnTime,
+        b.version,
+        b.createTime,
+        b.updateTime
+        from borrowing b,book_info bi
+        <where>
+            b.borrowingBookNo = bi.bookNo
+            <if test="borrowingName !=null and borrowingName != ''">
+                and b.borrowingName = #{borrowingName}
+            </if>
+
+            <if test="borrowingBookNo!=null and borrowingBookNo != ''">
+                and b.borrowingBookNo =#{borrowingBookNo}
+            </if>
+
+            <if test="borrowingBookNoName!=null and borrowingBookNoName != ''">
+                and bi.bookName =#{borrowingBookNoName}
+            </if>
+
+            <if test="renewAble!= null">
+                and b.renewable = #{renewAble}
+            </if>
+
+            <if test="returnState != null">
+                and b.returnState = #{returnState}
+            </if>
+        </where>
+
+        ) t1
+        where rownum &lt; #{endIndex}) t2
+         where t2.rn &gt;=  #{startIndex}) t3 left join book_info
+         on t3.borrowingBookNoName = book_info.bookName and book_info.state not in (2,3)
+    </select>
+
+    <select id="queryBorrowingCountsByUserName" resultType="Integer" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto">
+        select
+        count(b.borrowingBookNo)
+        from borrowing b,book_info bi
+        where b.borrowingName = #{borrowingName} and b.borrowingBookNo = bi.bookNo
+        <if test="borrowingName !=null and borrowingName != ''">
+            and b.borrowingName = #{borrowingName}
+        </if>
+
+        <if test="borrowingBookNo!=null and borrowingBookNo != ''">
+            and b.borrowingBookNo =#{borrowingBookNo}
+        </if>
+
+        <if test="borrowingBookNoName!=null and borrowingBookNoName != ''">
+            and bi.bookName =#{borrowingBookNoName}
+        </if>
+
+        <if test="renewAble!= null">
+            and b.renewable = #{renewAble}
+        </if>
+
+        <if test="returnState != null">
+            and b.returnState = #{returnState}
+        </if>
+    </select>
+
+    <select id="queryOverdueBorrowingInfo" resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
+        select
+        b.id,
+        b.borrowingName,
+        b.borrowingBookNo,
+        bi.bookName as borrowingBookNoName,
+        b.renewAble,
+        b.BORROWIINGTIME as borrowingTime,
+        b.shouldReturnTime,
+        b.returnTime,
+        b.version,
+        b.createTime,
+        b.updateTime
+        from borrowing b,book_info bi
+        where b.shouldReturnTime &lt; sysdate and b.borrowingBookNo = bi.bookNo
+    </select>
+
+    <select id="queryAllBrowingInfo" resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
+        select
+        b.id,
+        b.borrowingName,
+        b.borrowingBookNo,
+        bi.bookName as borrowingBookNoName,
+        b.renewAble,
+        b.BORROWIINGTIME as borrowingTime,
+        b.shouldReturnTime,
+        b.returnTime,
+        b.version,
+        b.createTime,
+        b.updateTime
+        from borrowing b,book_info bi
+        where sysdate+5 like b.shouldReturnTime and b.borrowingBookNo = bi.bookNo
+    </select>
+
+
+    <select id="queryAllBrowingInfoByMonth" resultType="com.biyesheji.bookmanagerservice.entity.BorrowingResult">
+        SELECT DISTINCT
+	        temp3.*,
+	        BOOK_INFO.IMGURL as imageUrl
+      FROM
+	(select temp2.* from
+        (select rownum rn,temp.* from
+        (select
+        bi.bookName as borrowingBookNoName ,
+--         bi.imgUrl as imageUrl ,
+        count(bookName) as counts
+        from borrowing b,book_info bi
+        where TO_CHAR(b.BORROWIINGTIME,'YYYY-MM') LIKE TO_CHAR(SYSDATE,'YYYY-MM')
+         and b.borrowingBookNo = bi.bookNo group by bookName order by count(bookName) desc) temp
+          where rownum &lt; 10) temp2
+           where temp2.rn &gt;= 0) temp3,
+	BOOK_INFO
+WHERE
+	temp3.borrowingBookNoName = BOOK_INFO.BOOKNAME
+    </select>
+
+<update id="updateBorrowingInfo">
+    update borrowing
+    <trim prefix="set" suffixOverrides=",">
+        <if test="renewAble !=null">
+            renewable =#{renewAble},
+        </if>
+
+        <if test="shouldReturnTime !=null">
+            shouldReturnTime =#{shouldReturnTime},
+        </if>
+
+        <if test="returnTime !=null">
+            returnTime =#{returnTime},
+        </if>
+
+        <if test="returnStateNew !=null">
+            returnState =#{returnStateNew},
+        </if>
+        version =version+1 ,
+        updateTime = sysdate ,
+    </trim>
+    where borrowingBookNo =#{borrowingBookNo}
+    <if test="returnState != null">
+        and returnState = #{returnState}
+    </if>
+</update>
+
+    <insert id="insertBorrowInfo" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto">
+        insert into borrowing values
+        (
+        BORROWING_sequence.nextval,
+        #{borrowingName,jdbcType=VARCHAR},
+        #{borrowingBookNo,jdbcType=VARCHAR},
+        #{renewAble,jdbcType=NUMERIC},
+        #{borrowingTime,jdbcType=DATE},
+        #{shouldReturnTime,jdbcType=DATE},
+        #{returnTime,jdbcType=DATE},
+        #{returnState,jdbcType=NUMERIC},
+        #{version,jdbcType=NUMERIC},
+        sysdate,
+        sysdate
+        )
+    </insert>
+
+    <select id="queryByCondition" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto"
+            resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
+        select
+        b.id,
+        b.borrowingName,
+        b.borrowingBookNo,
+        bi.bookName as borrowingBookNoName,
+        b.renewAble,
+        b.BORROWIINGTIME as borrowingTime,
+        b.shouldReturnTime,
+        b.returnTime,
+        b.version,
+        b.createTime,
+        b.updateTime
+        from borrowing b,book_info bi
+        <where>
+            b.borrowingBookNo = bi.bookNo
+            <if test="borrowingName !=null and borrowingName != ''">
+                and b.borrowingName = #{borrowingName}
+            </if>
+
+            <if test="borrowingBookNo!=null and borrowingBookNo != ''">
+                and b.borrowingBookNo =#{borrowingBookNo}
+            </if>
+
+            <if test="borrowingBookNoName!=null and borrowingBookNoName != ''">
+                and bi.bookName =#{borrowingBookNoName}
+            </if>
+
+            <if test="renewAble!= null">
+                and b.renewable = #{renewAble}
+            </if>
+
+            <if test="returnState != null">
+                and b.returnState = #{returnState}
+            </if>
+        </where>
+    </select>
+</mapper>
