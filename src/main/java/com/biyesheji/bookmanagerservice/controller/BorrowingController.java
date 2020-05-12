@@ -29,18 +29,18 @@ public class BorrowingController {
         try{
             return ApiResult.success(ApiResultEnum.SUCCESS.getIndex(),borrowingServiceImpl.queryBorrowingInfo(borrowDto));
         }catch (Exception e){
-            return ApiResult.success(ApiResultEnum.SUCCESS.getIndex(),e.getMessage());
+            return ApiResult.success(ApiResultEnum.FAILED.getIndex(),e.getMessage());
         }
 
     }
 
-    @PostMapping("/updateBorrowInfo")
+    @PostMapping("/renew")
     @ApiOperation("续借")
     public ApiResult renew(@RequestBody BorrowDto borrowDto){
         try{
             return ApiResult.success(ApiResultEnum.SUCCESS.getIndex(),borrowingServiceImpl.renew(borrowDto));
         }catch (Exception e){
-            return ApiResult.success(ApiResultEnum.SUCCESS.getIndex(),e.getMessage());
+            return ApiResult.success(ApiResultEnum.FAILED.getIndex(),e.getMessage());
         }
 
     }

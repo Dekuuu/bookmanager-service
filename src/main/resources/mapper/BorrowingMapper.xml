@@ -184,6 +184,7 @@ WHERE
         b.borrowingBookNo,
         bi.bookName as borrowingBookNoName,
         b.renewAble,
+        b.returnState,
         b.BORROWIINGTIME as borrowingTime,
         b.shouldReturnTime,
         b.returnTime,

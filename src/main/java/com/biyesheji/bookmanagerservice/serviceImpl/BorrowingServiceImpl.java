@@ -117,6 +117,27 @@ public class BorrowingServiceImpl implements BorrowingService {
         if(loginInfo == null){
             throw new Exception("请先登录");
         }
-        return adminService.reNewBook(borrowDto);
+        borrowDto.setReturnState(ApiResultEnum.NOT_RETURN.getIndex());
+//        先查
+        BorrowingInfo borrowingInfo = borrowingMapper.queryByCondition(borrowDto);
+        if(borrowingInfo == null){
+            throw new Exception("该书籍已经归还!不能再被续借!!");
+        }
+
+//        判断是否已经不可续借，续借次数为0
+        if(borrowingInfo.getRenewAble() == 0){
+            throw new Exception("该书籍已被续借!不能再被续借!!");
+        }
+//        判断应归还时间是否已经逾期，如果逾期，则不允许续借
+        if(borrowingInfo.getShouldReturnTime().getTime()<System.currentTimeMillis()){
+            throw new Exception("已经逾期的借阅图书不能续借!");
+        }
+//        修改状态
+//        这里时间要注意int类型的越界问题，两个数的加法默认走的是int类型
+        long time =borrowingInfo.getShouldReturnTime().getTime()+1000*60*60*24*31L;
+        borrowDto.setShouldReturnTime(new Date(time));
+        borrowDto.setRenewAble(0);
+        borrowingMapper.updateBorrowingInfo(borrowDto);
+        return 1;
     }
 }

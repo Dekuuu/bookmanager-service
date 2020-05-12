@@ -265,15 +265,16 @@ public class AdminServiceImpl implements AdminService {
 //        先查
         BorrowingInfo borrowingInfo = borrowingMapper.queryByCondition(borrowDto);
         if(borrowingInfo == null){
-            return 0;
+            throw new Exception("该书籍已经归还!不能再被续借!!");
         }
+
 //        判断是否已经不可续借，续借次数为0
         if(borrowingInfo.getRenewAble() == 0){
             throw new Exception("该书籍已被续借!不能再被续借!!");
         }
 //        判断应归还时间是否已经逾期，如果逾期，则不允许续借
         if(borrowingInfo.getShouldReturnTime().getTime()<System.currentTimeMillis()){
-            throw new Exception("已经逾期的借阅信息不能续借!");
+            throw new Exception("已经逾期的借阅图书不能续借!");
         }
 //        修改状态
 //        这里时间要注意int类型的越界问题，两个数的加法默认走的是int类型
