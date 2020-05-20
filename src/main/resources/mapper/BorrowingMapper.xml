@@ -90,7 +90,7 @@
         b.createTime,
         b.updateTime
         from borrowing b,book_info bi
-        where b.shouldReturnTime &lt; sysdate and b.borrowingBookNo = bi.bookNo
+        where b.shouldReturnTime &lt; sysdate and b.borrowingBookNo = bi.bookNo and b.returnState = 0
     </select>
 
     <select id="queryAllBrowingInfo" resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
@@ -107,7 +107,7 @@
         b.createTime,
         b.updateTime
         from borrowing b,book_info bi
-        where sysdate+5 like b.shouldReturnTime and b.borrowingBookNo = bi.bookNo
+        where sysdate+5 like b.shouldReturnTime and b.borrowingBookNo = bi.bookNo and b.returnState = 0
     </select>
 
 

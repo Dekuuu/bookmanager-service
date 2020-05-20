@@ -62,8 +62,10 @@ public class BorrowingServiceImpl implements BorrowingService {
                     books.add(borrowingInfo.getBorrowingBookNoName());
                 }
             }
-            emailMap.put(loginInfo.getEmail(),books);
-            map.put(loginInfo.getUserName(),emailMap);
+            if(books.size() != 0){
+                emailMap.put(loginInfo.getEmail(),books);
+                map.put(loginInfo.getUserName(),emailMap);
+            }
         }
         for(Map.Entry<String,Map<String,List<String>>> m : map.entrySet()){
             Map<String,List<String>> listTemp = m.getValue();
@@ -93,8 +95,11 @@ public class BorrowingServiceImpl implements BorrowingService {
                     books.add(borrowingInfo.getBorrowingBookNoName());
                 }
             }
-            emailMap.put(loginInfo.getEmail(),books);
-            map.put(loginInfo.getUserName(),emailMap);
+//            存在即将逾期的借阅记录才发送邮件
+            if(books.size() != 0){
+                emailMap.put(loginInfo.getEmail(),books);
+                map.put(loginInfo.getUserName(),emailMap);
+            }
         }
         for(Map.Entry<String,Map<String,List<String>>> m : map.entrySet()){
             Map<String,List<String>> listTemp = m.getValue();
