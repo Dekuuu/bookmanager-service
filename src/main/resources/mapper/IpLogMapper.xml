@@ -43,8 +43,8 @@
                 and loginTime like to_date(#{loginTimeSearch},'YYYY-MM-DD')
             </if>
         </where>) t1
-        where rownum &lt; #{endIndex}) t2
-        where t2.rn &gt;= #{startIndex}
+        where rownum &lt;= #{endIndex}) t2
+        where t2.rn &gt; #{startIndex}
     </select>
 
     <select id="queryIpLogCounts" parameterType="com.biyesheji.bookmanagerservice.dto.IpLogDto"

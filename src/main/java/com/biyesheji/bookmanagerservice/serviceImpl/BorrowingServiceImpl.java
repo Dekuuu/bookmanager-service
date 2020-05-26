@@ -59,7 +59,7 @@ public class BorrowingServiceImpl implements BorrowingService {
             Map<String,List<String>> emailMap = new HashMap<>();
             for(BorrowingInfo borrowingInfo : borrowingInfoList){
                 if(borrowingInfo.getBorrowingName().equals(loginInfo.getUserName())){
-                    books.add(borrowingInfo.getBorrowingBookNoName());
+                    books.add("《"+borrowingInfo.getBorrowingBookNoName()+"》");
                 }
             }
             if(books.size() != 0){
@@ -92,7 +92,7 @@ public class BorrowingServiceImpl implements BorrowingService {
             Map<String,List<String>> emailMap = new HashMap<>();
             for(BorrowingInfo borrowingInfo : borrowingInfoList){
                 if(borrowingInfo.getBorrowingName().equals(loginInfo.getUserName())){
-                    books.add(borrowingInfo.getBorrowingBookNoName());
+                    books.add("《"+borrowingInfo.getBorrowingBookNoName()+"》");
                 }
             }
 //            存在即将逾期的借阅记录才发送邮件
