@@ -42,7 +42,7 @@
             <if test="loginTimeSearch != null">
                 and loginTime like to_date(#{loginTimeSearch},'YYYY-MM-DD')
             </if>
-        </where>) t1
+        </where> order by loginTime desc) t1
         where rownum &lt;= #{endIndex}) t2
         where t2.rn &gt; #{startIndex}
     </select>

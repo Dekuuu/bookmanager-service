@@ -141,7 +141,7 @@
             <if test="email != null and email !=''">
                 and email = #{email}
             </if>
-        </where>) t1 where rownum &lt;= #{endIndex} )
+        </where> order by createTime desc) t1 where rownum &lt;= #{endIndex} )
         t2 where t2.rn &gt; #{startIndex}
     </select>
 

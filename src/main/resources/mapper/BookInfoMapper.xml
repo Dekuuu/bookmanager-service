@@ -48,7 +48,7 @@
             <if test="state!=null">
                 and state = #{state}
             </if>
-        </where> order by id) book
+        </where> order by id desc) book
         where rownum &lt;= #{endIndex}) t
         where t.rn &gt; #{startIndex}
     </select>

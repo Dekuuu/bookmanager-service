@@ -4,6 +4,7 @@
 <mapper namespace="com.biyesheji.bookmanagerservice.mapper.BorrowingMapper">
     <select id="queryBorrowingInfoByUserName" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto"
             resultType="com.biyesheji.bookmanagerservice.entity.BorrowingInfo">
+        select * from (
         select distinct t3.*,book_info.imgurl as imageUrl from
         (select t2.* from
         (select t1.*,rownum rn from
@@ -43,11 +44,11 @@
                 and b.returnState = #{returnState}
             </if>
         </where>
-
         ) t1
         where rownum &lt; #{endIndex}) t2
          where t2.rn &gt;=  #{startIndex}) t3 left join book_info
-         on t3.borrowingBookNoName = book_info.bookName and book_info.state not in (2,3)
+         on t3.borrowingBookNoName = book_info.bookName and book_info.state not in (2,3) ) t4
+        order by t4.borrowingTime desc
     </select>
 
     <select id="queryBorrowingCountsByUserName" resultType="Integer" parameterType="com.biyesheji.bookmanagerservice.dto.BorrowDto">
